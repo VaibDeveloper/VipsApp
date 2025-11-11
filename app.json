@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "VipsApp",
+    "slug": "VipsApp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/vips-logo1.webp",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/vips-logo1.webp",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/vips-logo1.webp",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
