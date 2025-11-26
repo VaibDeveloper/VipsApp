@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import logo from "../assets/vips-logo.png";
 
-const Header = () => {
+const Header = ({navigation}) => {
   const [profileColor, setProfileColor] = useState("#000");
   const [bellColor, setBellColor] = useState("#000");
 
@@ -28,7 +28,7 @@ const Header = () => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            setProfileColor(profileColor === "#000" ? "red" : "#000");
+            navigation.navigate("Profile");
             //onProfilePress();
           }}
         >
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-end",
     paddingHorizontal: 15,
-    //paddingVertical: 0,
+    paddingVertical: 10,
     backgroundColor: "#fff",
     elevation: 8, // Shadow for Android
     shadowColor: "#000", // Shadow for iOS

@@ -1,55 +1,84 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { PieChart } from "react-native-svg-charts";
+import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { G, Text as SVGText } from "react-native-svg";
+import { PieChart } from "react-native-chart-kit";
+
+const screenWidth = Dimensions.get("window").width;
 
 const attendanceData = [
-  { subject: "Subject", faculty: "Faculty Name", percentage: 85, color: "#f28b82" },
-  { subject: "Subject", faculty: "Faculty Name", percentage: 60, color: "#aecbfa" },
-  { subject: "Subject", faculty: "Faculty Name", percentage: 95, color: "#fff475" },
-  { subject: "Subject", faculty: "Faculty Name", percentage: 78, color: "#ccff90" },
+  { subject: "Java", faculty: "Dr. Swati Jain", percentage: 85, color: "#f28b82" },
+  { subject: "Digital Marketing", faculty: "Dr. Pawan Whig", percentage: 60, color: "#aecbfa" },
+  { subject: "Software Engineering", faculty: "Dr. Pooja Thakar", percentage: 95, color: "#fff475" },
+  { subject: "DSA", faculty: "Dr. Pooja Saigal", percentage: 78, color: "#ccff90" },
 ];
 
+const chartConfig = {
+  backgroundGradientFrom: "#ffffff",
+  backgroundGradientTo: "#ffffff",
+  color: (opacity = 1) => `rgba(0,0,0, ${opacity})`,
+  propsForLabels: { fontSize: 12 },
+};
 
 const Attendance = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        <Text style={styles.heading}>
-          <Ionicons name="pie-chart-outline" size={24} /> Attendance
-        </Text>
+      <ScrollView
+        contentContainerStyle={[styles.scrollContainer, styles.scrollContent]}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.headingRow}>
+          <Ionicons name="pie-chart-outline" size={24} />
+          <Text style={styles.headingText}>Attendance</Text>
+        </View>
+
         {attendanceData.map((item, index) => {
           const pieData = [
             {
-              key: 1,
-              value: item.percentage,
-              svg: { fill: item.color },
+              name: "Present",
+              attendance: item.percentage,
+              color: item.color,
+              legendFontColor: "#333",
+              legendFontSize: 12,
             },
             {
-              key: 2,
-              value: 100 - item.percentage,
-              svg: { fill: "#e0e0e0" },
+              name: "Absent",
+              attendance: 100 - item.percentage,
+              color: "#e0e0e0",
+              legendFontColor: "#333",
+              legendFontSize: 12,
             },
           ];
+
+          const chartWidth = 300;
+          const chartHeight = 180;
 
           return (
             <View key={index} style={styles.card}>
               <View style={styles.chartContainer}>
                 <PieChart
-                  style={{ height: 160, width: 160 }}
                   data={pieData}
-                  outerRadius="100%"
-                >
-                  <Labels percentage={item.percentage} />
-                </PieChart>
+                  width={chartWidth}
+                  height={chartHeight}
+                  chartConfig={chartConfig}
+                  accessor="attendance"
+                  backgroundColor="transparent"
+                  paddingLeft="70"
+                  hasLegend={false}
+                />
+
+                <View style={styles.centerLabel}>
+                  <Text style={styles.centerLabelText}>{`${item.percentage}%`}</Text>
+                </View>
               </View>
+
               <View style={styles.textContainer}>
                 <View style={styles.row}>
                   <Ionicons name="book-outline" size={18} />
                   <Text style={styles.subjectText}>{item.subject}</Text>
                 </View>
+
                 <View style={styles.row}>
                   <Ionicons name="person-outline" size={18} />
                   <Text style={styles.facultyText}>{item.faculty}</Text>
@@ -63,22 +92,6 @@ const Attendance = () => {
   );
 };
 
-const Labels = ({ percentage }) => (
-  <G>
-    <SVGText
-      x="37%"
-      y="40%"
-      alignmentBaseline="middle"
-      textAnchor="middle"
-      fontSize={20}
-      fontWeight="bold"
-      fill="#333"
-    >
-      {`${percentage}%`}
-    </SVGText>
-  </G>
-);
-
 export default Attendance;
 
 const styles = StyleSheet.create({
@@ -86,44 +99,85 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
+
   scrollContainer: {
-    padding: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     paddingBottom: 32,
-    paddingTop: 0,
   },
-  heading: {
+
+  scrollContent: {
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+
+  headingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    alignSelf: "flex-start",
+    paddingHorizontal: 4,
+  },
+
+  headingText: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 18,
+    marginLeft: 8,
   },
+
   card: {
     backgroundColor: "#f5f5f5",
     borderRadius: 12,
-    paddingVertical: 24,
+    paddingVertical: 18,
     paddingHorizontal: 16,
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: 20,
     elevation: 3,
+    width: "100%",
+    maxWidth: 640,
   },
+
   chartContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 16,
-    width: "100%",
+    marginBottom: 10,
+    width: 200,
+    height: 200,
+    //alignSelf: "center",
   },
+
+  centerLabel: {
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+
+  centerLabelText: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#333",
+  },
+
   textContainer: {
     alignItems: "center",
   },
+
   row: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 6,
   },
+
   subjectText: {
     marginLeft: 8,
-    fontWeight: "bold",
+    fontWeight: "700",
     fontSize: 16,
   },
+
   facultyText: {
     marginLeft: 8,
     fontSize: 15,

@@ -1,0 +1,13 @@
+[
+  {
+    "id": "u_1764180937239",
+    "fullName": "Vaibhav",
+    "email": "vaibhav@example.com",
+    "phone": "",
+    "username": "",
+    "password": "$2b$10$LUM9x20bfnj0B1t6hxRy8u2PKmX9eDk.sj3k8.YCn4lq9ZwBeoxv6",
+    "role": "student",
+    "isVerified": false,
+    "createdAt": "2025-11-26T18:15:37.239Z"
+  }
+]
