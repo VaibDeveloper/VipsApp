@@ -11,6 +11,8 @@ import SetPasswordScreen from "./screens/SetPasswordScreen";
 import Profile from "./screens/Profile.js";
 import RoleNavigator from "./RoleNavigator";
 import FacultyProfile from "./screens/Faculty/FacultyProfile";
+import TimetableScreen from "./screens/TimetableScreen";
+import NotificationsScreen from "./screens/NotificationsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +33,16 @@ const AppNavigator = () => {
           name="Login"
           component={LoginScreen}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Notifications"
+          component={NotificationsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Timetable"
+          component={TimetableScreen}
+          options={{ headerShown: true }}
         />
         <Stack.Screen
           name="SignUp"

@@ -15,7 +15,7 @@ const Header = ({ navigation, user }) => {
         <TouchableOpacity
           onPress={() => {
             setBellColor(bellColor === "#000" ? "red" : "#000");
-            //onBellPress();
+            navigation.navigate("Notifications");
           }}
         >
           <Ionicons
