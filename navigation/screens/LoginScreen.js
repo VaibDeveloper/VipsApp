@@ -19,8 +19,26 @@ const LoginScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const onLoginPress = () => {
-    navigation.replace("HomeTabs");
-  };
+  // 🔥 TEMP DEMO LOGIC (based on email)
+
+  let user;
+
+  if (collegeMail === "faculty@gmail.com") {
+    user = {
+      name: "Faculty One",
+      email: collegeMail,
+      role: "faculty",
+    };
+  } else {
+    user = {
+      name: "Student One",
+      email: collegeMail,
+      role: "student",
+    };
+  }
+
+  navigation.replace("HomeTabs", { user });
+};
 
   return (
     <SafeAreaView style={styles.safe}>

@@ -17,22 +17,23 @@ import { Ionicons } from "@expo/vector-icons";
 const VIPS_RED = "#E53935";
 const placeholder = require("../../assets/avatar.png");
 
-const Profile = ({ navigation }) => {
+const Profile = ({ navigation, route }) => {
+  const incomingUser = route?.params?.user;
   // user state (in real app fetch from backend or context)
   const [user, setUser] = useState({
-    name: "Bhawna Verma",
-    email: "bca_00817702023_vaibhav@vipstc.edu.in",
-    phone: "9876543210",
-    avatar: placeholder,
-  });
+  name: incomingUser?.name || "User",
+  email: incomingUser?.email || "No Email",
+  phone: "9876543210",
+  avatar: placeholder,
+});
 
   // modal state for edit
   const [editVisible, setEditVisible] = useState(false);
-  const [tempName, setTempName] = useState(user.name);
+  const [tempName, setTempName] = useState(user?.name);
   const [tempPhone, setTempPhone] = useState(user.phone);
 
   const openEdit = () => {
-    setTempName(user.name);
+    setTempName(user?.name);
     setTempPhone(user.phone);
     setEditVisible(true);
   };
@@ -77,7 +78,7 @@ const Profile = ({ navigation }) => {
           <View style={styles.avatarRow}>
             <Image source={user.avatar} style={styles.avatar} />
             <View style={styles.userInfo}>
-              <Text style={styles.name}>{user.name}</Text>
+              <Text style={styles.name}>{user?.name}</Text>
               <Text style={styles.email}>{user.email}</Text>
               <Text style={styles.phone}>{user.phone}</Text>
             </View>

@@ -9,6 +9,8 @@ import SignUpScreen from "./screens/SignUpScreen";
 import OtpVerification from "./screens/OtpVerification";
 import SetPasswordScreen from "./screens/SetPasswordScreen";
 import Profile from "./screens/Profile.js";
+import RoleNavigator from "./RoleNavigator";
+import FacultyProfile from "./screens/Faculty/FacultyProfile";
 
 const Stack = createNativeStackNavigator();
 
@@ -17,7 +19,9 @@ const AppNavigator = () => {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
-          header: (props) => <Header {...props} />,
+          header: (props) => (
+            <Header {...props} user={props.route?.params?.user} />
+          ),
           contentStyle: {
             backgroundColor: "#fff",
           },
@@ -39,6 +43,11 @@ const AppNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="FacultyProfile"
+          component={FacultyProfile}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="SetPassword"
           component={SetPasswordScreen}
           options={{ headerShown: false }}
@@ -51,7 +60,7 @@ const AppNavigator = () => {
 
         <Stack.Screen
           name="HomeTabs"
-          component={BottomNavigator}
+          component={RoleNavigator}
           options={{
             headerShown: true,
           }}

@@ -1,34 +1,120 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView } from "react-native";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ScrollView,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 const Notes = () => {
+  const [expandedIndex, setExpandedIndex] = useState(null);
+
   const notesData = [
-    { subject: "Software Engineering", faculty: "Faculty Name" },
-    { subject: "Java", faculty: "Faculty Name" },
-    { subject: "Artificial Intelligence", faculty: "Faculty Name" },
-    { subject: "C++", faculty: "Faculty Name" },
-    { subject: "Discrete Mathematics", faculty: "Faculty Name" },
-    { subject: "HTML", faculty: "Faculty Name" },
+    {
+      subject: "Software Engineering",
+      faculty: "Dr. Pooja Thakur",
+      files: [
+        { name: "Unit 1 Notes.pdf", type: "pdf" },
+        { name: "SDLC.ppt", type: "ppt" },
+      ],
+    },
+    {
+      subject: "Java",
+      faculty: "Dr. Swati Jain",
+      files: [
+        { name: "OOP Concepts.pdf", type: "pdf" },
+        { name: "Exception Handling.doc", type: "doc" },
+      ],
+    },
+    {
+      subject: "Artificial Intelligence",
+      faculty: "Dr. Pawan Whig",
+      files: [
+        { name: "Search Algorithms.pdf", type: "pdf" },
+      ],
+    },
   ];
+
+  const toggleExpand = (index) => {
+    setExpandedIndex(index === expandedIndex ? null : index);
+  };
+
+  // 📄 File Icon Helper
+  const getIcon = (type) => {
+    if (type === "pdf") return "document-text";
+    if (type === "ppt") return "easel";
+    if (type === "doc") return "document";
+    return "document-outline";
+  };
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        <View style={styles.content}>
-          <Text style={styles.heading}>Notes</Text>
+      <ScrollView contentContainerStyle={styles.content}>
 
-          {notesData.map((item, index) => (
-            <TouchableOpacity key={index} style={styles.noteCard}>
-              <Text style={styles.subject}>{item.subject}</Text>
-              <Text style={styles.faculty}>{item.faculty}</Text>
-            </TouchableOpacity>
-          ))}
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Study Material</Text>
+          <Text style={styles.subtitle}>Access your notes</Text>
         </View>
+
+        {/* Subjects */}
+        {notesData.map((item, index) => {
+          const isExpanded = expandedIndex === index;
+
+          return (
+            <View key={index} style={styles.card}>
+
+              {/* 🔹 Subject Row */}
+              <TouchableOpacity
+                style={styles.row}
+                onPress={() => toggleExpand(index)}
+              >
+                <View>
+                  <Text style={styles.subject}>{item.subject}</Text>
+                  <Text style={styles.faculty}>{item.faculty}</Text>
+                </View>
+
+                <Ionicons
+                  name={isExpanded ? "chevron-up" : "chevron-down"}
+                  size={22}
+                  color="#555"
+                />
+              </TouchableOpacity>
+
+              {/* 🔥 Expanded Files */}
+              {isExpanded && (
+                <View style={styles.filesContainer}>
+                  {item.files.map((file, i) => (
+                    <View key={i} style={styles.fileRow}>
+
+                      <View style={styles.fileLeft}>
+                        <Ionicons
+                          name={getIcon(file.type)}
+                          size={22}
+                          color="#E53935"
+                        />
+                        <Text style={styles.fileName}>{file.name}</Text>
+                      </View>
+
+                      <TouchableOpacity>
+                        <Ionicons
+                          name="download"
+                          size={20}
+                          color="#333"
+                        />
+                      </TouchableOpacity>
+
+                    </View>
+                  ))}
+                </View>
+              )}
+
+            </View>
+          );
+        })}
+
       </ScrollView>
     </View>
   );
@@ -36,47 +122,76 @@ const Notes = () => {
 
 export default Notes;
 
+// 🎨 STYLES
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
   },
 
-  // ⭐ THIS handles child layout for ScrollView (required)
-  scrollContent: {
-    paddingBottom: 20,
-  },
-
   content: {
     padding: 16,
+    paddingBottom: 30,
   },
 
-  heading: {
-    fontSize: 24,
-    fontWeight: "bold",
+  header: {
     marginBottom: 20,
   },
 
-  noteCard: {
-    backgroundColor: "#f2f2f2",
-    borderRadius: 10,
-    padding: 16,
+  title: {
+    fontSize: 22,
+    fontWeight: "700",
+  },
+
+  subtitle: {
+    color: "#666",
+    marginTop: 4,
+  },
+
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 14,
     marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
+  },
+
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 
   subject: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 16,
+    fontWeight: "700",
   },
 
   faculty: {
-    fontSize: 16,
-    color: "#555",
+    color: "#666",
     marginTop: 4,
+  },
+
+  filesContainer: {
+    marginTop: 12,
+  },
+
+  fileRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+
+  fileLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  fileName: {
+    marginLeft: 10,
+    fontWeight: "600",
   },
 });

@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import logo from "../assets/vips-logo.png";
 
-const Header = ({navigation}) => {
+const Header = ({ navigation, user }) => {
   const [profileColor, setProfileColor] = useState("#000");
   const [bellColor, setBellColor] = useState("#000");
 
@@ -28,7 +28,11 @@ const Header = ({navigation}) => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate("Profile");
+            if (user?.role === "faculty") {
+              navigation.navigate("FacultyProfile", { user });
+            } else {
+              navigation.navigate("Profile", { user });
+            }
             //onProfilePress();
           }}
         >
@@ -36,7 +40,7 @@ const Header = ({navigation}) => {
             name="person-circle-outline"
             size={35}
             color={profileColor}
-            style={{ marginLeft: 10}}
+            style={{ marginLeft: 10 }}
           />
         </TouchableOpacity>
       </View>

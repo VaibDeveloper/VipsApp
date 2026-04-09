@@ -1,39 +1,58 @@
-import React from "react";
-import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { PieChart } from "react-native-chart-kit";
 
 const screenWidth = Dimensions.get("window").width;
 
 const attendanceData = [
-  { subject: "Java", faculty: "Dr. Swati Jain", percentage: 85, color: "#f28b82" },
-  { subject: "Digital Marketing", faculty: "Dr. Pawan Whig", percentage: 60, color: "#aecbfa" },
-  { subject: "Software Engineering", faculty: "Dr. Pooja Thakar", percentage: 95, color: "#fff475" },
-  { subject: "DSA", faculty: "Dr. Pooja Saigal", percentage: 78, color: "#ccff90" },
+  { subject: "Java", faculty: "Dr. Swati Jain", percentage: 85, color: "#4CAF50" },
+  { subject: "Digital Marketing", faculty: "Dr. Pawan Whig", percentage: 60, color: "#E53935" },
+  { subject: "Software Engineering", faculty: "Dr. Pooja Thakar", percentage: 95, color: "#4CAF50" },
+  { subject: "DSA", faculty: "Dr. Pooja Saigal", percentage: 78, color: "#FFA000" },
 ];
 
-const chartConfig = {
-  backgroundGradientFrom: "#ffffff",
-  backgroundGradientTo: "#ffffff",
-  color: (opacity = 1) => `rgba(0,0,0, ${opacity})`,
-  propsForLabels: { fontSize: 12 },
-};
-
 const Attendance = () => {
+  const [expandedIndex, setExpandedIndex] = useState(null);
+
+  const toggleExpand = (index) => {
+    setExpandedIndex(index === expandedIndex ? null : index);
+  };
+
+  // 📊 Overall %
+  const avg =
+    Math.round(
+      attendanceData.reduce((sum, s) => sum + s.percentage, 0) /
+        attendanceData.length
+    ) || 0;
+
   return (
     <View style={styles.container}>
-      <ScrollView
-        contentContainerStyle={[styles.scrollContainer, styles.scrollContent]}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.headingRow}>
-          <Ionicons name="pie-chart-outline" size={24} />
-          <Text style={styles.headingText}>Attendance</Text>
+      <ScrollView contentContainerStyle={styles.content}>
+
+        {/* 🔥 HEADER */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Attendance</Text>
+          <Text style={styles.subtitle}>Your performance overview</Text>
         </View>
 
+        {/* 📊 OVERALL CARD */}
+        <View style={styles.overallCard}>
+          <Text style={styles.overallText}>Overall Attendance</Text>
+          <Text style={styles.overallValue}>{avg}%</Text>
+        </View>
+
+        {/* 📚 SUBJECT LIST */}
         {attendanceData.map((item, index) => {
+          const isExpanded = expandedIndex === index;
+
           const pieData = [
             {
               name: "Present",
@@ -51,42 +70,75 @@ const Attendance = () => {
             },
           ];
 
-          const chartWidth = 300;
-          const chartHeight = 180;
-
           return (
             <View key={index} style={styles.card}>
-              <View style={styles.chartContainer}>
-                <PieChart
-                  data={pieData}
-                  width={chartWidth}
-                  height={chartHeight}
-                  chartConfig={chartConfig}
-                  accessor="attendance"
-                  backgroundColor="transparent"
-                  paddingLeft="70"
-                  hasLegend={false}
-                />
-
-                <View style={styles.centerLabel}>
-                  <Text style={styles.centerLabelText}>{`${item.percentage}%`}</Text>
-                </View>
-              </View>
-
-              <View style={styles.textContainer}>
-                <View style={styles.row}>
-                  <Ionicons name="book-outline" size={18} />
-                  <Text style={styles.subjectText}>{item.subject}</Text>
+              
+              {/* 🔹 HEADER ROW */}
+              <TouchableOpacity
+                style={styles.row}
+                onPress={() => toggleExpand(index)}
+              >
+                <View>
+                  <Text style={styles.subject}>{item.subject}</Text>
+                  <Text style={styles.faculty}>{item.faculty}</Text>
                 </View>
 
-                <View style={styles.row}>
-                  <Ionicons name="person-outline" size={18} />
-                  <Text style={styles.facultyText}>{item.faculty}</Text>
+                <View style={styles.right}>
+                  <Text style={[styles.percent, { color: item.color }]}>
+                    {item.percentage}%
+                  </Text>
+                  <Ionicons
+                    name={isExpanded ? "chevron-up" : "chevron-down"}
+                    size={22}
+                    color="#555"
+                  />
                 </View>
-              </View>
+              </TouchableOpacity>
+
+              {/* 🔥 EXPANDED CONTENT */}
+              {isExpanded && (
+                <View style={styles.expandSection}>
+
+                  {/* Chart */}
+                  <PieChart
+                    data={pieData}
+                    width={screenWidth - 80}
+                    height={180}
+                    chartConfig={{
+                      color: () => "#000",
+                    }}
+                    accessor="attendance"
+                    backgroundColor="transparent"
+                    paddingLeft="40"
+                    hasLegend={false}
+                  />
+
+                  {/* Stats */}
+                  <View style={styles.statsRow}>
+                    <Text style={styles.stat}>
+                      Present: {item.percentage}%
+                    </Text>
+                    <Text style={styles.stat}>
+                      Absent: {100 - item.percentage}%
+                    </Text>
+                  </View>
+
+                  {/* Status */}
+                  <View style={styles.statusBox}>
+                    <Text style={styles.statusText}>
+                      {item.percentage >= 75
+                        ? "✅ Good Attendance"
+                        : "⚠️ Low Attendance - Improve"}
+                    </Text>
+                  </View>
+
+                </View>
+              )}
+
             </View>
           );
         })}
+
       </ScrollView>
     </View>
   );
@@ -94,93 +146,107 @@ const Attendance = () => {
 
 export default Attendance;
 
+// 🎨 STYLES
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
   },
 
-  scrollContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-    paddingBottom: 32,
+  content: {
+    padding: 16,
   },
 
-  scrollContent: {
-    alignItems: "center",
-    justifyContent: "flex-start",
+  header: {
+    marginBottom: 20,
   },
 
-  headingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-    alignSelf: "flex-start",
-    paddingHorizontal: 4,
+  title: {
+    fontSize: 22,
+    fontWeight: "700",
   },
 
-  headingText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginLeft: 8,
+  subtitle: {
+    color: "#666",
+    marginTop: 4,
+  },
+
+  overallCard: {
+    backgroundColor: "#E53935",
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+
+  overallText: {
+    color: "#fff",
+    fontSize: 14,
+  },
+
+  overallValue: {
+    color: "#fff",
+    fontSize: 28,
+    fontWeight: "700",
+    marginTop: 4,
   },
 
   card: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#fff",
     borderRadius: 12,
-    paddingVertical: 18,
-    paddingHorizontal: 16,
-    alignItems: "center",
-    marginBottom: 20,
-    elevation: 3,
-    width: "100%",
-    maxWidth: 640,
-  },
-
-  chartContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 10,
-    width: 200,
-    height: 200,
-    //alignSelf: "center",
-  },
-
-  centerLabel: {
-    position: "absolute",
-    alignItems: "center",
-    justifyContent: "center",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-
-  centerLabelText: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#333",
-  },
-
-  textContainer: {
-    alignItems: "center",
+    marginBottom: 12,
+    padding: 14,
+    elevation: 2,
   },
 
   row: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 6,
   },
 
-  subjectText: {
-    marginLeft: 8,
+  subject: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+
+  faculty: {
+    color: "#666",
+    marginTop: 4,
+  },
+
+  right: {
+    alignItems: "flex-end",
+  },
+
+  percent: {
     fontWeight: "700",
     fontSize: 16,
   },
 
-  facultyText: {
-    marginLeft: 8,
-    fontSize: 15,
-    color: "#555",
+  expandSection: {
+    marginTop: 15,
+    alignItems: "center",
+  },
+
+  statsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "80%",
+    marginTop: 10,
+  },
+
+  stat: {
+    fontWeight: "600",
+  },
+
+  statusBox: {
+    marginTop: 12,
+    backgroundColor: "#f5f5f5",
+    padding: 10,
+    borderRadius: 8,
+  },
+
+  statusText: {
+    fontWeight: "600",
   },
 });
