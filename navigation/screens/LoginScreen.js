@@ -18,26 +18,35 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const onLoginPress = () => {
-  // 🔥 TEMP DEMO LOGIC (based on email)
+  const onLoginPress = async () => {
+  try {
+    const response = await fetch("http://192.168.1.41:4000/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: collegeMail,
+        password: password,
+      }),
+    });
 
-  let user;
+    const data = await response.json();
 
-  if (collegeMail === "faculty@gmail.com") {
-    user = {
-      name: "Faculty One",
-      email: collegeMail,
-      role: "faculty",
-    };
-  } else {
-    user = {
-      name: "Student One",
-      email: collegeMail,
-      role: "student",
-    };
+    if (response.ok) {
+      const user = data.user;
+
+      // ✅ ALWAYS go to HomeTabs
+      navigation.replace("HomeTabs", { user });
+
+    } else {
+      alert(data.message || "Invalid credentials");
+    }
+
+  } catch (error) {
+    console.log("LOGIN ERROR:", error);
+    alert("Server not reachable");
   }
-
-  navigation.replace("HomeTabs", { user });
 };
 
   return (

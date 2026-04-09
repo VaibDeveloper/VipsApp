@@ -1,5 +1,6 @@
 // src/server.js
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -10,7 +11,6 @@ const assignmentsRoutes = require('./routes/assignments');
 const notesRoutes = require('./routes/notes');
 const attendanceRoutes = require('./routes/attendance');
 const notificationsRoutes = require('./routes/notifications');
-
 const app = express();
 
 app.use(cors());

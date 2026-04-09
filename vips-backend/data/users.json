@@ -1,13 +1,54 @@
 [
   {
-    "id": "u_1764180937239",
+    "id": "u_1",
     "fullName": "Vaibhav",
-    "email": "vaibhav@example.com",
-    "phone": "",
-    "username": "",
-    "password": "$2b$10$LUM9x20bfnj0B1t6hxRy8u2PKmX9eDk.sj3k8.YCn4lq9ZwBeoxv6",
+    "email": "vaibhav@gmail.com",
+    "password": "123456",
+    "role": "student"
+  },
+  {
+    "id": "u_2",
+    "fullName": "Bhawna",
+    "email": "bhawna@gmail.com",
+    "password": "123456",
+    "role": "student"
+  },
+  {
+    "id": "u_3",
+    "fullName": "Dr Pooja Thakur",
+    "email": "faculty1@gmail.com",
+    "password": "123456",
+    "role": "faculty",
+    "isVerified": true
+  },
+  {
+    "id": "u_4",
+    "fullName": "Dr Swati Jain",
+    "email": "faculty2@gmail.com",
+    "password": "123456",
+    "role": "faculty",
+    "isVerified": true
+  },
+  {
+    "id": "u_1775770226274",
+    "fullName": "Bhawna Verma",
+    "email": "bca_02629802023_bhawna@vipstc.edu.in",
+    "phone": "9310832857",
+    "username": "Bhawna Verma",
+    "password": "123456",
     "role": "student",
-    "isVerified": false,
-    "createdAt": "2025-11-26T18:15:37.239Z"
+    "isVerified": true,
+    "createdAt": "2026-04-09T21:30:26.274Z"
+  },
+  {
+    "id": "u_1775770916218",
+    "fullName": "Vaibhav Khurana",
+    "email": "bca_00817702023_vaibhav@vipstc.edu.in",
+    "phone": "9643106306",
+    "username": "Vaibhav Khurana",
+    "password": "123456",
+    "role": "student",
+    "isVerified": true,
+    "createdAt": "2026-04-09T21:41:56.218Z"
   }
 ]

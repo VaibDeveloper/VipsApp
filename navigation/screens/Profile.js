@@ -78,8 +78,8 @@ const Profile = ({ navigation, route }) => {
             <Image source={user.avatar} style={styles.avatar} />
             <View style={styles.userInfo}>
               <Text style={styles.name}>{user?.name}</Text>
-              <Text style={styles.email}>{user.email}</Text>
-              <Text style={styles.phone}>{user.phone}</Text>
+              <Text style={styles.email}>{user?.email}</Text>
+              <Text style={styles.phone}>{user?.phone}</Text>
             </View>
           </View>
 

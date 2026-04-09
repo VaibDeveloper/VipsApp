@@ -14,9 +14,9 @@ const transporter = configured ? nodemailer.createTransport({
 
 async function sendEmail(to, subject, text) {
   if (!transporter) {
-    console.log('[email] not configured. Skipping. Subject:', subject, 'to:', to);
-    return;
-  }
+  console.log("OTP (DEV MODE):", text);
+  return;
+}
   return transporter.sendMail({
     from: process.env.EMAIL_USER,
     to,

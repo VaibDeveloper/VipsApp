@@ -8,9 +8,13 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+
+const API = "http://192.168.1.41:4000/api/auth";
 
 const SetPasswordScreen = ({ route, navigation }) => {
   const { email } = route.params || {};
@@ -19,21 +23,60 @@ const SetPasswordScreen = ({ route, navigation }) => {
   const [confirm, setConfirm] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = () => {
+  ////////////////////////////////////////////////////////////
+  // 🔥 SUBMIT (CONNECTED TO BACKEND)
+  ////////////////////////////////////////////////////////////
+  const onSubmit = async () => {
     if (password.length < 6) {
-      alert("Password must be at least 6 characters");
-      return;
-    }
-    if (password !== confirm) {
-      alert("Passwords do not match!");
+      Alert.alert("Error", "Password must be at least 6 characters");
       return;
     }
 
-    alert("Password Set Successfully!");
-    navigation.replace("Login");
+    if (password !== confirm) {
+      Alert.alert("Error", "Passwords do not match!");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${API}/set-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.toLowerCase(),
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert("Success", "Password set successfully 🎉", [
+          {
+            text: "Login",
+            onPress: () => navigation.replace("Login"),
+          },
+        ]);
+      } else {
+        Alert.alert("Error", data.message || "Failed to set password");
+      }
+
+    } catch (error) {
+      console.log("SET PASSWORD ERROR:", error);
+      Alert.alert("Error", "Server not reachable");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  ////////////////////////////////////////////////////////////
+  // UI
+  ////////////////////////////////////////////////////////////
   return (
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView
@@ -46,7 +89,6 @@ const SetPasswordScreen = ({ route, navigation }) => {
           contentContainerStyle={styles.scroll}
         >
           <Text style={styles.title}>Set Password</Text>
-
           <Text style={styles.subText}>For: {email}</Text>
 
           {/* New Password */}
@@ -93,8 +135,17 @@ const SetPasswordScreen = ({ route, navigation }) => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.btn} onPress={onSubmit}>
-            <Text style={styles.btnText}>Submit</Text>
+          {/* BUTTON */}
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={onSubmit}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.btnText}>Submit</Text>
+            )}
           </TouchableOpacity>
 
           <View style={{ height: 40 }} />

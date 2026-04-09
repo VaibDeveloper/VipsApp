@@ -1,5 +1,3 @@
-// navigation/screens/OtpVerification.js
-
 import React, { useRef, useState, useEffect } from "react";
 import {
   View,
@@ -10,94 +8,154 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+const API = "http://192.168.1.41:4000/api/auth";
 
 const OtpVerification = ({ route, navigation }) => {
   const { email } = route.params || {};
 
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [timer, setTimer] = useState(30);
+  const [loading, setLoading] = useState(false);
+
   const inputRefs = [useRef(), useRef(), useRef(), useRef()];
 
+  ////////////////////////////////////////////////////////////
+  // ⏱️ TIMER
+  ////////////////////////////////////////////////////////////
   useEffect(() => {
-    let interval = setInterval(() => {
+    const interval = setInterval(() => {
       setTimer((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
+  ////////////////////////////////////////////////////////////
+  // 🔢 INPUT HANDLING
+  ////////////////////////////////////////////////////////////
   const handleChange = (text, index) => {
     if (/^\d$/.test(text)) {
       const newOtp = [...otp];
       newOtp[index] = text;
       setOtp(newOtp);
 
-      // Move to next box automatically
       if (index < 3) inputRefs[index + 1].current.focus();
     }
   };
 
   const handleKeyPress = ({ nativeEvent }, index) => {
-  if (nativeEvent.key === "Backspace") {
     const newOtp = [...otp];
 
-    if (otp[index] === "") {
-      // Move back if current box is already empty
-      if (index > 0) {
+    if (nativeEvent.key === "Backspace") {
+      if (otp[index] === "" && index > 0) {
         newOtp[index - 1] = "";
         setOtp(newOtp);
         inputRefs[index - 1].current.focus();
+      } else {
+        newOtp[index] = "";
+        setOtp(newOtp);
       }
-    } else {
-      // Clear current box
-      newOtp[index] = "";
-      setOtp(newOtp);
     }
-  }
-};
+  };
 
-  const onSubmit = () => {
+  ////////////////////////////////////////////////////////////
+  // 🔥 VERIFY OTP
+  ////////////////////////////////////////////////////////////
+  const onSubmit = async () => {
     const code = otp.join("");
 
-    if (code.length < 4) {
-      alert("Please enter 4-digit OTP");
+    if (code.length !== 4) {
+      Alert.alert("Error", "Enter 4-digit OTP");
       return;
     }
 
-    // Validate OTP here
-    alert("OTP Verified Successfully!");
-    navigation.navigate("SetPassword", { email });
+    try {
+      setLoading(true);
 
-  };
+      const response = await fetch(`${API}/verify-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, code }),
+      });
 
-  const onResend = () => {
-    if (timer === 0) {
-      setTimer(30);
-      alert("OTP Resent!");
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("OTP VERIFIED SUCCESS");
+
+        navigation.reset({
+          index: 0,
+          routes: [
+            {
+              name: "SetPassword",
+              params: { email },
+            },
+          ],
+        });
+      } else {
+        Alert.alert("Error", data.message || "Invalid OTP");
+      }
+    } catch (error) {
+      console.log("OTP ERROR:", error);
+      Alert.alert("Error", "Server not reachable");
+    } finally {
+      setLoading(false);
     }
   };
 
+  ////////////////////////////////////////////////////////////
+  // 🔁 RESEND OTP (🔥 FIX ADDED)
+  ////////////////////////////////////////////////////////////
+  const onResend = async () => {
+    if (timer !== 0) return;
+
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${API}/send-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        Alert.alert("Success", "OTP Resent 📩");
+        setTimer(30);
+      } else {
+        Alert.alert("Error", "Failed to resend OTP");
+      }
+    } catch (error) {
+      console.log("RESEND ERROR:", error);
+      Alert.alert("Error", "Server not reachable");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  ////////////////////////////////////////////////////////////
+  // UI
+  ////////////////////////////////////////////////////////////
   return (
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 80}
       >
-        <ScrollView
-          contentContainerStyle={styles.scroll}
-          keyboardShouldPersistTaps="always"
-          showsVerticalScrollIndicator={false}
-        >
+        <ScrollView contentContainerStyle={styles.container}>
           <Text style={styles.title}>Verify OTP</Text>
-
-          <Text style={styles.subText}>OTP has been sent to:</Text>
-
+          <Text style={styles.subText}>OTP sent to</Text>
           <Text style={styles.email}>{email}</Text>
 
-          {/* OTP Boxes */}
+          {/* OTP BOXES */}
           <View style={styles.otpRow}>
             {otp.map((digit, index) => (
               <TextInput
@@ -109,38 +167,29 @@ const OtpVerification = ({ route, navigation }) => {
                 keyboardType="numeric"
                 maxLength={1}
                 style={styles.otpBox}
-                editable={true}
-                selectTextOnFocus={true}
-                autoCorrect={false}
-                autoCapitalize="none"
-                importantForAutofill="no"
-                textContentType="oneTimeCode"
-                inputMode="numeric"
               />
             ))}
           </View>
 
-          {/* Submit */}
-          <TouchableOpacity style={styles.btn} onPress={onSubmit}>
-            <Text style={styles.btnText}>Submit</Text>
+          {/* VERIFY BUTTON */}
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={onSubmit}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.btnText}>Verify OTP</Text>
+            )}
           </TouchableOpacity>
 
-          {/* Resend OTP */}
-          <TouchableOpacity
-            onPress={timer === 0 ? onResend : null}
-            style={{ marginTop: 16 }}
-          >
-            <Text
-              style={[
-                styles.resendText,
-                { color: timer === 0 ? "#E53935" : "#999" },
-              ]}
-            >
-              {timer === 0 ? "Resend OTP" : `Resend OTP in ${timer}s`}
+          {/* RESEND */}
+          <TouchableOpacity onPress={onResend} style={{ marginTop: 16 }}>
+            <Text style={{ color: timer === 0 ? "#E53935" : "#999" }}>
+              {timer === 0 ? "Resend OTP" : `Resend in ${timer}s`}
             </Text>
           </TouchableOpacity>
-
-          <View style={{ height: 40 }} />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -150,71 +199,47 @@ const OtpVerification = ({ route, navigation }) => {
 export default OtpVerification;
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#FFFFFF" },
+  safe: { flex: 1, backgroundColor: "#f6f7fb" },
 
-  scroll: {
+  container: {
     flexGrow: 1,
     padding: 20,
     alignItems: "center",
+    justifyContent: "center",
   },
 
-  title: {
-    fontSize: 28,
-    fontWeight: "700",
-    marginTop: 20,
-    marginBottom: 10,
-  },
-
-  subText: {
-    fontSize: 15,
-    color: "#555",
-  },
-
-  email: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#E53935",
-    marginTop: 4,
-    marginBottom: 20,
-  },
+  title: { fontSize: 26, fontWeight: "bold" },
+  subText: { color: "#666", marginTop: 10 },
+  email: { color: "#E53935", fontWeight: "600", marginTop: 4 },
 
   otpRow: {
     flexDirection: "row",
-    justifyContent: "center",
     marginVertical: 20,
   },
 
   otpBox: {
     width: 55,
     height: 55,
+    borderWidth: 1,
     borderColor: "#E53935",
-    borderWidth: 1.5,
-    marginHorizontal: 8,
+    marginHorizontal: 6,
     borderRadius: 10,
     textAlign: "center",
     fontSize: 20,
-    fontWeight: "600",
     backgroundColor: "#fff",
   },
 
   btn: {
     width: "100%",
-    height: 48,
     backgroundColor: "#E53935",
-    borderRadius: 8,
+    padding: 14,
+    borderRadius: 10,
     alignItems: "center",
-    justifyContent: "center",
-    marginTop: 10,
   },
 
   btnText: {
     color: "#fff",
-    fontSize: 17,
     fontWeight: "600",
-  },
-
-  resendText: {
-    fontSize: 15,
-    fontWeight: "500",
+    fontSize: 16,
   },
 });

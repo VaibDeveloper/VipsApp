@@ -2,7 +2,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-const dataDir = path.join(process.cwd(), 'data');
+const dataDir = path.join(__dirname, '../../data');
 
 // in-process lock map to avoid concurrent writes in same process
 const locks = new Map();

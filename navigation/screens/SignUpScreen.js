@@ -1,4 +1,3 @@
-// navigation/screens/SignUpScreen.js
 import React, { useState } from "react";
 import {
   View,
@@ -11,49 +10,67 @@ import {
   Platform,
   Alert,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+const PRIMARY = "#E53935";
 
 const SignUpScreen = ({ navigation }) => {
   const [fullName, setFullName] = useState("");
   const [mobile, setMobile] = useState("");
   const [collegeEmail, setCollegeEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [semester, setSemester] = useState("1");
+  const [loading, setLoading] = useState(false);
 
-  // pattern: course_enrollmentnumber_name@vipstc.edu.in
   const emailRegex = /^[a-zA-Z]+_[0-9]+_[a-zA-Z]+@vipstc\.edu\.in$/;
 
-  const onSignUpPress = () => {
-    // basic validations
-    if (!fullName.trim()) {
-      Alert.alert("Validation", "Please enter full name");
-      return;
-    }
-    if (!/^[0-9]{10}$/.test(mobile)) {
-      Alert.alert("Validation", "Please enter a valid 10-digit mobile number");
-      return;
-    }
-    if (!collegeEmail.trim()) {
-      Alert.alert("Validation", "Please enter college email");
-      return;
-    }
-    if (!emailRegex.test(collegeEmail.toLowerCase())) {
-      Alert.alert(
-        "Invalid Email",
-        'College Email must be in the format "course_enrollmentnumber_name@vipstc.edu.in'
-      );
-      return;
-    }
+  const onSignUpPress = async () => {
+    // ✅ VALIDATION
+    if (!fullName.trim()) return Alert.alert("Validation", "Enter full name");
+    if (!/^[0-9]{10}$/.test(mobile)) return Alert.alert("Validation", "Enter valid mobile");
+    if (!emailRegex.test(collegeEmail.toLowerCase()))
+      return Alert.alert("Invalid Email", "Enter valid VIPS email format");
 
-    // TODO: Save user to users.json or call backend
-    Alert.alert("Success", "Account created successfully", [
-      {
-        text: "OK",
-        onPress: () =>
-          navigation.navigate("OtpVerification", { email: collegeEmail })
-      },
-    ]);
+    try {
+      setLoading(true);
+
+      const response = await fetch("http://192.168.1.41:4000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName,
+          email: collegeEmail,
+          password,
+          phone: mobile,
+          username: fullName,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert("Success", "Account created 🎉", [
+          {
+            text: "Verify OTP",
+            onPress: () =>
+              navigation.navigate("OtpVerification", { email: collegeEmail }),
+          },
+        ]);
+      } else {
+        Alert.alert("Error", data.message || "Signup failed");
+      }
+
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "Server not reachable");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -61,68 +78,64 @@ const SignUpScreen = ({ navigation }) => {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 80}
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.top}>
-            <Image
-              source={require("../../assets/vips-logo1.webp")}
-              style={styles.logo}
-              resizeMode="contain"
-            />
+        <ScrollView contentContainerStyle={styles.container}>
+
+          {/* 🔥 LOGO */}
+          <Image
+            source={require("../../assets/vips-logo1.webp")}
+            style={styles.logo}
+          />
+
+          {/* 🔥 TITLE */}
+          <Text style={styles.title}>Create Account</Text>
+
+          {/* 🔥 INPUTS */}
+          <TextInput
+            placeholder="Full Name"
+            value={fullName}
+            onChangeText={setFullName}
+            style={styles.input}
+          />
+
+          <TextInput
+            placeholder="Mobile Number"
+            keyboardType="phone-pad"
+            value={mobile}
+            onChangeText={setMobile}
+            style={styles.input}
+            maxLength={10}
+          />
+
+          <TextInput
+            placeholder="College Email"
+            value={collegeEmail}
+            onChangeText={setCollegeEmail}
+            style={styles.input}
+            autoCapitalize="none"
+          />
+
+          {/* 🔥 SEMESTER */}
+          <View style={styles.pickerWrapper}>
+            <Picker selectedValue={semester} onValueChange={setSemester}>
+              <Picker.Item label="Semester 1" value="1" />
+              <Picker.Item label="Semester 2" value="2" />
+              <Picker.Item label="Semester 3" value="3" />
+              <Picker.Item label="Semester 4" value="4" />
+              <Picker.Item label="Semester 5" value="5" />
+              <Picker.Item label="Semester 6" value="6" />
+            </Picker>
           </View>
 
-          <View style={styles.form}>
-            <TextInput
-              placeholder="Full Name"
-              placeholderTextColor="#999"
-              value={fullName}
-              onChangeText={setFullName}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Mobile Number"
-              placeholderTextColor="#999"
-              keyboardType="phone-pad"
-              value={mobile}
-              onChangeText={setMobile}
-              style={[styles.input, { marginTop: 12 }]}
-              maxLength={10}
-            />
-            <TextInput
-              placeholder="College Email Id"
-              placeholderTextColor="#999"
-              autoCapitalize="none"
-              keyboardType="email-address"
-              value={collegeEmail}
-              onChangeText={setCollegeEmail}
-              style={[styles.input, { marginTop: 12 }]}
-            />
-            <View style={[styles.pickerWrapper, { marginTop: 12 }]}>
-              <Picker
-                selectedValue={semester}
-                onValueChange={(val) => setSemester(val)}
-                style={styles.picker}
-                itemStyle={{ fontSize: 16 }}
-              >
-                <Picker.Item label="Semester 1" value="1" />
-                <Picker.Item label="Semester 2" value="2" />
-                <Picker.Item label="Semester 3" value="3" />
-                <Picker.Item label="Semester 4" value="4" />
-                <Picker.Item label="Semester 5" value="5" />
-                <Picker.Item label="Semester 6" value="6" />
-              </Picker>
-            </View>
+          {/* 🔥 BUTTON */}
+          <TouchableOpacity style={styles.btn} onPress={onSignUpPress} disabled={loading}>
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.btnText}>Create Account</Text>
+            )}
+          </TouchableOpacity>
 
-            <TouchableOpacity style={styles.signUpBtn} onPress={onSignUpPress}>
-              <Text style={styles.signUpBtnText}>Create Account</Text>
-            </TouchableOpacity>
-            <View style={{ height: 30 }} />
-          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -132,72 +145,53 @@ const SignUpScreen = ({ navigation }) => {
 export default SignUpScreen;
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#FFFFFF" },
+  safe: { flex: 1, backgroundColor: "#f6f7fb" },
 
-  // scrollContent handles children layout for ScrollView
-  scrollContent: {
+  container: {
     flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 20,
-    alignItems: "center",
-    justifyContent: "center", // centers logo above inputs
-  },
-
-  top: {
-    width: "100%",
-    alignItems: "center",
-    marginBottom: 12,
-    paddingBottom: 8,
+    padding: 20,
+    justifyContent: "center",
   },
 
   logo: {
-    width: 160,
-    height: 80,
+    width: 150,
+    height: 125,
+    alignSelf: "center",
+    marginBottom: 10,
   },
 
-  form: {
-    width: "100%",
-    alignItems: "center",
-    paddingTop: 6,
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
   },
 
   input: {
-    width: "100%",
-    height: 48,
-    borderWidth: 1,
-    borderColor: "#E53935",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    fontSize: 16,
-    color: "#111",
     backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#eee",
   },
 
   pickerWrapper: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#E53935",
-    borderRadius: 8,
-    overflow: "hidden",
     backgroundColor: "#fff",
-    justifyContent: "center",
+    borderRadius: 10,
+    marginBottom: 16,
   },
 
-  picker: {
-    width: "100%",
-    height: 48,
-  },
-
-  signUpBtn: {
-    marginTop: 18,
-    width: "100%",
-    height: 48,
-    backgroundColor: "#E53935",
-    borderRadius: 8,
+  btn: {
+    backgroundColor: PRIMARY,
+    padding: 14,
+    borderRadius: 10,
     alignItems: "center",
-    justifyContent: "center",
-    elevation: 2,
   },
-  signUpBtnText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+
+  btnText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
 });
