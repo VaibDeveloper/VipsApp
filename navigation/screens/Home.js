@@ -115,7 +115,7 @@ const Home = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <View style={styles.safe}>
       <ScrollView
         contentContainerStyle={styles.container}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#E53935" />}
@@ -124,7 +124,7 @@ const Home = ({ navigation }) => {
         <View style={styles.header}>
           <View>
             <Text style={styles.greet}>Hello,</Text>
-            <Text style={styles.username}>Vaibhav</Text>
+            <Text style={styles.username}>Bhawna</Text>
           </View>
 
           <TouchableOpacity
@@ -225,7 +225,7 @@ const Home = ({ navigation }) => {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#fff" },
 
   container: {
-    paddingVertical: 18,
+    paddingVertical: 20,
     paddingHorizontal: 16,
   },
 
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 12,
     padding: 12,
-    marginBottom: 10,
+    //marginBottom: 10,
     elevation: 2,
   },
 

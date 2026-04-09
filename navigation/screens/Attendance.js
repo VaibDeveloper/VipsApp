@@ -22,7 +22,7 @@ const chartConfig = {
 
 const Attendance = () => {
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView
         contentContainerStyle={[styles.scrollContainer, styles.scrollContent]}
         showsVerticalScrollIndicator={false}
@@ -88,7 +88,7 @@ const Attendance = () => {
           );
         })}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   },
 
   scrollContainer: {
-    paddingVertical: 12,
+    paddingVertical: 20,
     paddingHorizontal: 16,
     paddingBottom: 32,
   },

@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-end",
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    //marginBottom: 20,
     backgroundColor: "#fff",
     elevation: 8, // Shadow for Android
     shadowColor: "#000", // Shadow for iOS

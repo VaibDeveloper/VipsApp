@@ -21,7 +21,7 @@ const Profile = ({ navigation }) => {
   // user state (in real app fetch from backend or context)
   const [user, setUser] = useState({
     name: "Bhawna Verma",
-    email: "bca_02629802023_vaibhav@vipstc.edu.in",
+    email: "bca_00817702023_vaibhav@vipstc.edu.in",
     phone: "9876543210",
     avatar: placeholder,
   });

@@ -18,6 +18,9 @@ const AppNavigator = () => {
       <Stack.Navigator
         screenOptions={{
           header: (props) => <Header {...props} />,
+          contentStyle: {
+            backgroundColor: "#fff",
+          },
         }}
       >
         <Stack.Screen
@@ -40,9 +43,11 @@ const AppNavigator = () => {
           component={SetPasswordScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="Profile"
-         component={Profile}
-         options={{ headerShown: false }} />
+        <Stack.Screen
+          name="Profile"
+          component={Profile}
+          options={{ headerShown: false }}
+        />
 
         <Stack.Screen
           name="HomeTabs"

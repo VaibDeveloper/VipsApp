@@ -160,7 +160,7 @@ const Assignments = () => {
   );
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <View style={styles.safe}>
       <View style={styles.headerRow}>
         <View>
           <Text style={styles.headerTitle}>Assignments</Text>
@@ -290,7 +290,7 @@ const Assignments = () => {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 
