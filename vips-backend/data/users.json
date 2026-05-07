@@ -4,14 +4,16 @@
     "fullName": "Vaibhav",
     "email": "vaibhav@gmail.com",
     "password": "123456",
-    "role": "student"
+    "role": "student",
+    "isVerified": true
   },
   {
     "id": "u_2",
     "fullName": "Bhawna",
     "email": "bhawna@gmail.com",
     "password": "123456",
-    "role": "student"
+    "role": "student",
+    "isVerified": true
   },
   {
     "id": "u_3",
@@ -41,14 +43,14 @@
     "createdAt": "2026-04-09T21:30:26.274Z"
   },
   {
-    "id": "u_1775770916218",
-    "fullName": "Vaibhav Khurana",
-    "email": "bca_00817702023_vaibhav@vipstc.edu.in",
-    "phone": "9643106306",
-    "username": "Vaibhav Khurana",
-    "password": "123456",
+    "id": "u_1777267869812",
+    "fullName": "sahil",
+    "email": "bca_02529802023_sahil@vipstc.edu.in",
+    "phone": "9310832857",
+    "username": "sahil",
+    "password": "234567",
     "role": "student",
     "isVerified": true,
-    "createdAt": "2026-04-09T21:41:56.218Z"
+    "createdAt": "2026-04-27T05:31:09.812Z"
   }
 ]

@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const API = "http://192.168.1.41:4000/api/auth";
+const API = "http://172.20.10.12:4000/api/auth";
 
 const OtpVerification = ({ route, navigation }) => {
   const { email } = route.params || {};

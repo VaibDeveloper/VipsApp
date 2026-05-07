@@ -10,7 +10,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
  * Example for phone:
  *  export const BASE_URL = "http://192.168.1.110:4000/api";
  */
-export const BASE_URL = "http://127.0.0.1:4000/api"; // change when testing on real device
+export const BASE_URL = "http://172.20.10.12:4000/api"; // change when testing on real device
 
 // Read token from storage
 async function getToken() {

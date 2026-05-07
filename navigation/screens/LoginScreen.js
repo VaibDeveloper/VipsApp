@@ -20,7 +20,7 @@ const LoginScreen = ({ navigation }) => {
 
   const onLoginPress = async () => {
   try {
-    const response = await fetch("http://192.168.1.41:4000/api/auth/login", {
+    const response = await fetch("http://172.20.10.12:4000/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

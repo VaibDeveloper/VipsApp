@@ -54,7 +54,7 @@ const Home = ({ navigation }) => {
         <View style={styles.headerCard}>
           <View>
             <Text style={styles.greet}>Welcome back 👋</Text>
-            <Text style={styles.username}>Vaibhav</Text>
+            <Text style={styles.username}>Bhawna</Text>
           </View>
 
           <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
